@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 
-namespace Assets.CampingSimulator
+namespace Assets.CampingSimulator.Scripts
 {
     [Serializable]
     public class MouseLook

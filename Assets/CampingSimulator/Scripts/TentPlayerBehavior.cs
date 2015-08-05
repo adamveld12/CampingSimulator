@@ -1,15 +1,19 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
-namespace Assets.CampingSimulator
+namespace Assets.CampingSimulator.Scripts
 {
-
+    [Serializable]
     public class TentPlayerBehavior : MonoBehaviour
     {
-
         [SerializeField]
         private MouseLook MouseLook;
+
         [SerializeField]
         private Camera FPCamera;
+
+        [SerializeField]
+        private float InteractionDistance = 2;
 
         // Use this for initialization
         void Start()
@@ -21,8 +25,20 @@ namespace Assets.CampingSimulator
         // Update is called once per frame
         void Update()
         {
-
             MouseLook.LookRotation(transform, FPCamera.transform);
+            CheckForInteractable();
+        }
+
+        private void CheckForInteractable()
+        {
+            Vector3 fwd = transform.TransformDirection(Vector3.forward);
+            RaycastHit hitInfo;
+            if (Physics.Raycast(transform.position, fwd, out hitInfo, InteractionDistance))
+            {
+                Debug.Log("There is an interactable object in front of us.");
+                Debug.DrawLine(transform.position, hitInfo.point);
+            }
+
         }
     }
 }
