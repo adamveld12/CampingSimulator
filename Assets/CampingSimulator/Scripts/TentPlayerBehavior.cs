@@ -26,17 +26,25 @@ namespace Assets.CampingSimulator.Scripts
         void Update()
         {
             MouseLook.LookRotation(transform, FPCamera.transform);
-            CheckForInteractable();
+              CheckForInteractable();
         }
 
         private void CheckForInteractable()
         {
-            Vector3 fwd = transform.TransformDirection(Vector3.forward);
+            Vector3 fwd = FPCamera.transform.TransformDirection(Vector3.forward);
             RaycastHit hitInfo;
             if (Physics.Raycast(transform.position, fwd, out hitInfo, InteractionDistance))
             {
-                Debug.Log("There is an interactable object in front of us.");
+                var lantern = hitInfo.collider.gameObject.GetComponent<IInteractable>();
                 Debug.DrawLine(transform.position, hitInfo.point);
+                if (lantern != null)
+                {
+                    Debug.Log("There is an interactable object in front of us.");
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        lantern.Interact();
+                    }
+                }
             }
 
         }
