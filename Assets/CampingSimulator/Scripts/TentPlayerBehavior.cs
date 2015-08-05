@@ -6,8 +6,7 @@ namespace Assets.CampingSimulator.Scripts
     [Serializable]
     public class TentPlayerBehavior : MonoBehaviour
     {
-        [SerializeField]
-        private MouseLook MouseLook;
+        [SerializeField] private MouseLook MouseLook;
 
         [SerializeField]
         private Camera FPCamera;
@@ -18,7 +17,7 @@ namespace Assets.CampingSimulator.Scripts
         // Use this for initialization
         void Start()
         {
-            FPCamera = Camera.main;
+            FPCamera = GetComponentInChildren<Camera>();
             MouseLook.Init(transform, FPCamera.transform);
         }
 
@@ -26,7 +25,7 @@ namespace Assets.CampingSimulator.Scripts
         void Update()
         {
             MouseLook.LookRotation(transform, FPCamera.transform);
-              CheckForInteractable();
+            CheckForInteractable();
         }
 
         private void CheckForInteractable()
