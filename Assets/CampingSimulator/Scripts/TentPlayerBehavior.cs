@@ -35,14 +35,12 @@ namespace Assets.CampingSimulator.Scripts
             RaycastHit hitInfo;
             if (Physics.Raycast(transform.position, fwd, out hitInfo, InteractionDistance))
             {
-                var lantern = hitInfo.collider.gameObject.GetComponent<IInteractable>();
+                var interactable = hitInfo.collider.gameObject.GetComponent<IInteractable>();
                 Debug.DrawLine(transform.position, hitInfo.point);
-                if (lantern != null)
+                if (interactable != null)
                 {
                     if (Input.GetMouseButtonDown(0))
-                    {
-                        lantern.Interact();
-                    }
+                        interactable.Interact();
                 }
             }
 
