@@ -68,7 +68,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\CampingSimulator\TentPlayerBehavior.cs" />
+    <Compile Include="Assets\CampingSimulator\Scripts\MouseLook.cs" />
+    <Compile Include="Assets\CampingSimulator\Scripts\TentPlayerBehavior.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Standard Assets\Cameras\CameraGuidelines.txt" />
