@@ -39,7 +39,6 @@ namespace Assets.CampingSimulator.Scripts
                 Debug.DrawLine(transform.position, hitInfo.point);
                 if (lantern != null)
                 {
-                    Debug.Log("There is an interactable object in front of us.");
                     if (Input.GetMouseButtonDown(0))
                     {
                         lantern.Interact();

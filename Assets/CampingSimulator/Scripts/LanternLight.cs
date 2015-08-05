@@ -33,7 +33,8 @@ namespace Assets.CampingSimulator.Scripts
         {
             if (_lightToggle.enabled)
             {
-                Debug.Log("");
+                _currentCharge -= Time.deltaTime;
+                Debug.Log(String.Format("Charge is {0}%", maxCharge - maxCharge/_currentCharge));
             }
         }
 
@@ -44,6 +45,7 @@ namespace Assets.CampingSimulator.Scripts
 
         public void Interact()
         {
+            Debug.Log("Toggling light");
             _lightToggle.enabled = !_lightToggle.enabled;
         }
         
