@@ -6,7 +6,6 @@ namespace Assets.CampingSimulator.Scripts
 {
     [Serializable]
     [RequireComponent(typeof(Collider))]
-    [RequireComponent(typeof(Light))]
     public class LanternLight : MonoBehaviour, IInteractable
     {
         /// <summary>
@@ -18,10 +17,13 @@ namespace Assets.CampingSimulator.Scripts
         /// Enables an unlimited battery supply
         /// </summary>
         [SerializeField] private bool UnlimitedBattery = false;
+
+        /// <summary>
+        /// The minimum brightness of the light when the battery is low 0-1f
+        /// </summary>
+        [SerializeField] private float MinimumBrightness = 0.25f;
         private float _currentCharge; 
 
-        private Canvas _canvas;
-        
         private Light _lightSource;
 
         private Color _originalLightBulbMaterialColor, _originalLightColor;
@@ -29,20 +31,18 @@ namespace Assets.CampingSimulator.Scripts
 
         private Color _currentLightColor, _targetLightColor;
 
-        private bool _stateChanging;
-        private bool _isOn = true;
+        private bool _stateChanging, _isOn = true;
         private Material _lightMaterial;
 
         private Material GetLightMaterial()
         {
-            var meshRenderer = gameObject.GetComponentInParent<MeshRenderer>();
+            var meshRenderer = gameObject.GetComponentInChildren<MeshRenderer>();
             return meshRenderer.materials.FirstOrDefault(x => x.name == "Lightbulb (Instance)");
         }
 
         void Start()
         {
-            _canvas = gameObject.GetComponent<Canvas>();
-            _lightSource = gameObject.GetComponent<Light>();
+            _lightSource = gameObject.GetComponentInChildren<Light>();
             _currentCharge = MaxCharge;
             _lightMaterial = GetLightMaterial();
 
@@ -55,19 +55,28 @@ namespace Assets.CampingSimulator.Scripts
 
         void Update()
         {
+            if (IsOn)
+            {
+              _targetLightColor = Color.Lerp(new Color(0, 0, 0, 0), _originalLightColor, Mathf.Max(Charge, MinimumBrightness));
+              _lightSource.color = _currentLightColor = _targetLightColor;
+            }
+
             if (_stateChanging)
                 TransitionLightState();
+
+            _currentLightBulbMaterialColor = Color.Lerp(_currentLightBulbMaterialColor, _targetLightBulbMaterialColor, Time.fixedDeltaTime*10);
+            _lightMaterial.SetColor("_EmissionColor", _currentLightBulbMaterialColor);
 
             UpdateCharge();
         }
 
         private void UpdateCharge()
         {
-            if (UnlimitedBattery ||  !IsOn  ||  _currentCharge <= 0)
+            if (UnlimitedBattery || !IsOn ||  _currentCharge <= 0)
                 return;
 
-            _currentCharge -= Time.fixedDeltaTime;
             Debug.Log(String.Format("Lantern Battery: {0:F2}%", Charge * 100));
+            _currentCharge -= Time.fixedDeltaTime;
 
             if (_currentCharge <= 0)
             {
@@ -86,21 +95,10 @@ namespace Assets.CampingSimulator.Scripts
                 _currentLightBulbMaterialColor = _targetLightBulbMaterialColor;
                 _stateChanging = false;
             }
-            else
+            else 
             {
-              if (_currentLightBulbMaterialColor != _targetLightBulbMaterialColor)
-              {
-                  _currentLightBulbMaterialColor = Color.Lerp(_currentLightBulbMaterialColor,
-                      _targetLightBulbMaterialColor, Time.fixedDeltaTime*10);
-                  _lightMaterial.SetColor("_EmissionColor", _currentLightBulbMaterialColor);
-              }
-
-              if (_currentLightColor != _targetLightColor)
-              {
-                  _currentLightColor = Color.Lerp(_currentLightColor, _targetLightColor, Time.fixedDeltaTime*10);
-                  _lightSource.color = _currentLightColor;
-              }
-                  
+                _currentLightColor = Color.Lerp(_currentLightColor, _targetLightColor, Time.fixedDeltaTime * 10);
+                _lightSource.color = _currentLightColor;
             }
         }
 
@@ -135,7 +133,7 @@ namespace Assets.CampingSimulator.Scripts
             _stateChanging = true;
             _isOn = true;
             _targetLightBulbMaterialColor = _originalLightBulbMaterialColor;
-            _targetLightColor = Color.Lerp(_currentLightColor, _originalLightColor, Mathf.Max(Charge, 0.33f));
+            _targetLightColor = Color.Lerp(new Color(0, 0, 0, 0), _originalLightColor, Mathf.Max(Charge, MinimumBrightness));
         }
 
         public void TurnOff()
