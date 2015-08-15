@@ -59,8 +59,6 @@ namespace Assets.CampingSimulator.Scripts
 
             _originalLightColor = _lightSource.color;
             _lightMaterial = gameObject.GetComponentsInChildren<MeshRenderer>().SelectMany(x => x.materials).FirstOrDefault(x => x.name == "Lightbulb (Instance)");
-
-
         }
 
         void Update()

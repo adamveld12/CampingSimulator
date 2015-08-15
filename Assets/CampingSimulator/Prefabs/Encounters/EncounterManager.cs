@@ -15,7 +15,7 @@ namespace Assets.CampingSimulator.Scripts
         [Tooltip("The encounters the manager will choose from")] 
         public List<GameObject> Encounters;
 
-        private IEncounter _current;
+        private GameObject _current;
 
         // Use this for initialization
         void Start()
@@ -28,23 +28,15 @@ namespace Assets.CampingSimulator.Scripts
         // Update is called once per frame
         void Update()
         {
-            if (IsPlayerLightOn())
+            if (!IsPlayerLightOn())
             {
-                if (_current != null)
-                    _current.Abort();
+              if (_current == null)
+              {
+                _current = (GameObject) Instantiate(Encounters.First(), Vector3.zero, Quaternion.identity);
+                _current.transform.SetParent(gameObject.transform, true);
+                _current.GetComponent<IEncounter>().Begin();
+              }
             }
-            else
-            {
-                if (_current == null)
-                {
-                  var obj = (GameObject) Instantiate(Encounters.First(), Vector3.zero, Quaternion.identity);
-                  _current = obj.GetComponent<IEncounter>();
-                  StartCoroutine(_current.Begin(this));
-                }
-
-            }
-
-            
         }
 
         public float PlayerChargeAmount()
@@ -64,8 +56,13 @@ namespace Assets.CampingSimulator.Scripts
 
         public void Completed()
         {
+            Destroy(_current);
             _current = null;
-            Debug.Log("Completed Encounter");
         }
+    }
+
+    internal interface IEncounter
+    {
+        void Begin();
     }
 }
